@@ -109,37 +109,37 @@ games_summarized <- pbp %>%
 
 Take a second to familiarize with yourself with the datasets we created (`single_games`, `games`, `games_summarized`, `pbp`). We are going to try to answer some interesting questions by creating visualizations!
 
-Make a visualization to show Duke's (cumulative) point differential over the course of the season.
+#### Make a visualization to show Duke's (cumulative) point differential over the course of the season.
 
 ```{r}
 games
 ```
 
-Make visualizations to determine the effect of home court advantage.
+#### Make visualizations to determine the effect of home court advantage.
 
 ```{r}
 games
 ```
 
-How has offensive efficiency (measured by points per possession) changed over the course of the season?
+#### How has offensive efficiency (measured by points per possession) changed over the course of the season?
 
 ```{r}
 games_summarized
 ```
 
-Make visualizations to show which teams have the best offensive efficiency.
+#### Make visualizations to show which teams have the best offensive efficiency.
 
 ```{r}
 games_summarized
 ```
 
-Make a scatter plot with team offensive efficiency on the x-axis and team defensive efficiency on the y-axis. Size the points by the number of possessions charted. Use the `ggrepel` package to label the points by team name.
+#### Make a scatter plot with team offensive efficiency on the x-axis and team defensive efficiency on the y-axis. Size the points by the number of possessions charted. Use the `ggrepel` package to label the points by team name.
 
 ```{r}
 games_summarized
 ```
 
-Let's make some shot charts! The greatest part of the `gamezoneR` package is how many shot locations (x, y) are charted. Let's look at Duke's shot attempts this season:
+#### Let's make some shot charts! The greatest part of the `gamezoneR` package is how many shot locations (x, y) are charted. Let's look at Duke's shot attempts this season:
 
 ```{r}
 # Find Duke game IDs
@@ -162,7 +162,7 @@ gamezoneR::base_court +
              alpha = 0.5)
 ```
 
-Play around with different versions of shot charts. Make some by a particular shooter, by a particular game, etc.
+#### Play around with different versions of shot charts. Make some by a particular shooter, by a particular game, etc.
 
 ```{r}
 
@@ -256,5 +256,5 @@ duke_opp_fta %>%
        caption = "Chart: Jack Lichtenstein (@jacklich10) | Data: @gamezoneR")
 ```
 
-Go explore the data yourself! Visualize where teams like to shoot from relative to league average. Visualize where teams are most efficient shooting from. Look at free throw attempt rates for other teams. Do whatever interests you! 
+#### Go explore the data yourself! Visualize where teams like to shoot from relative to league average. Visualize where teams are most efficient shooting from. Look at free throw attempt rates for other teams. Do whatever interests you! 
 
