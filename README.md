@@ -14,7 +14,7 @@ Link: Coming soon
 
 ## Data
 
-We're going to be using the `gamezoneR` men's college basketball R package. Yes, I am the author of this package and I will shamelessly plug its use.
+We're going to be using the `gamezoneR` men's college basketball [R package](https://jacklich10.github.io/gamezoneR/index.html). Yes, I am the author of this package and I will shamelessly plug its use.
 
 ## Working with dplyr
 
