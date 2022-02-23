@@ -112,13 +112,25 @@ Take a second to familiarize with yourself with the datasets we created (`single
 #### Make a visualization to show Duke's (cumulative) point differential over the course of the season.
 
 ```{r}
-games
+games %>% 
+  filter(team == "Duke") %>% 
+  mutate(cum_pt_diff = cumsum(team_score - opponent_score)) %>% 
+  ggplot(aes(date, cum_pt_diff)) +
+  geom_line()
 ```
 
 #### Make visualizations to determine the effect of home court advantage.
 
 ```{r}
-games
+games %>% 
+  ggplot(aes(team_score, fill = location)) +
+  geom_histogram(position = "identity", alpha = 0.5) +
+  scale_fill_brewer(palette = "Set2") +
+  labs(x = "Points",
+       y = NULL,
+       fill = NULL,
+       title = "Home court advantage is alive and well",
+       subtitle = "2021-22 men's college basketball season")
 ```
 
 #### How has offensive efficiency (measured by points per possession) changed over the course of the season?
@@ -130,13 +142,65 @@ games_summarized
 #### Make visualizations to show which teams have the best offensive efficiency.
 
 ```{r}
-games_summarized
+off_eff <- games_summarized %>% 
+  group_by(team) %>% 
+  summarise(games = n(),
+            off_pts_per_poss = sum(pts_per_poss*poss)/sum(poss)) 
+
+off_eff %>% 
+  filter(games > 20) %>% 
+  slice_max(off_pts_per_poss, n = 10) %>% 
+  mutate(team = fct_reorder(team, off_pts_per_poss)) %>% 
+  ggplot(aes(off_pts_per_poss, team)) +
+  geom_col() +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05)))
 ```
 
 #### Make a scatter plot with team offensive efficiency on the x-axis and team defensive efficiency on the y-axis. Size the points by the number of possessions charted. Use the `ggrepel` package to label the points by team name.
 
 ```{r}
-games_summarized
+def_eff <- games_summarized %>% 
+  group_by(team = opponent) %>% 
+  summarise(games = n(),
+            def_pts_per_poss = sum(pts_per_poss*poss)/sum(poss)) 
+
+efficiencies <- off_eff %>% 
+  left_join(def_eff, by = c("team", "games")) %>% 
+  filter(games >= 10) %>% 
+  left_join(gamezoneR::mbb_team_info, by = c("team" = "game_zone")) 
+
+efficiencies %>% 
+  ggplot(aes(off_pts_per_poss, def_pts_per_poss)) +
+  geom_point(aes(size = games,
+                 color = secondary_color, fill = primary_color),
+             pch = 21, stroke = 0.8) +
+  ggrepel::geom_text_repel(aes(label = team),
+                           size = 3) +
+  scale_y_reverse() +
+  scale_size_continuous(range = c(0.5, 3)) +
+  scale_fill_identity() +
+  scale_color_identity() +
+  labs(x = "Offensive Efficiency",
+       y = "Defensive Efficiency")
+
+efficiencies %>% 
+  ggplot(aes(off_pts_per_poss, def_pts_per_poss)) +
+  geom_point(aes(size = games,
+                 color = secondary_color, fill = primary_color,
+                 alpha = ifelse(team %in% c("Duke", "North Carolina"), 0, 0.2)),
+             pch = 21, stroke = 0.8) +
+  # ggrepel::geom_text_repel(aes(label = ifelse(team %in% c("Duke", "North Carolina"), team, NA_character_)),
+  #                          size = 3) +
+  ggimage::geom_image(aes(image = ifelse(team %in% c("Duke", "North Carolina"), team_logo_espn, NA_character_)),
+                      size = 0.075) +
+  theme(aspect.ratio = 9/11) +
+  scale_y_reverse() +
+  scale_alpha_identity() +
+  scale_size_continuous(range = c(0.5, 3)) +
+  scale_fill_identity() +
+  scale_color_identity() +
+  labs(x = "Offensive Efficiency",
+       y = "Defensive Efficiency")
 ```
 
 #### Let's make some shot charts! The greatest part of the `gamezoneR` package is how many shot locations (x, y) are charted. Let's look at Duke's shot attempts this season:
@@ -150,16 +214,28 @@ duke_game_ids <- games %>%
 # Find Duke shot attempts
 duke_shots <- pbp %>% 
   dplyr::filter(game_id %in% duke_game_ids) %>% 
-  dplyr::filter(!is.na(loc_x))
+  dplyr::filter(!is.na(loc_x), event_team == "Duke")
 ```
 
 Here is a *very* basic shot chart for Duke:
 
 ```{r}
+duke_shots_filtered <- duke_shots %>% 
+  group_by(shooter) %>% 
+  mutate(shots = n()) %>% 
+  ungroup() %>% 
+  filter(shots >= 100)
+
 gamezoneR::base_court +
-  geom_point(data = duke_shots,
+  geom_point(data = duke_shots_filtered,
              aes(loc_x, loc_y, color = shot_outcome),
-             alpha = 0.5)
+             alpha = 0.5) +
+  facet_wrap(~ shooter) +
+  scale_color_manual(values = c("green", "red")) +
+  theme(strip.text = element_text(size = 9),
+        legend.spacing.x = grid::unit(0, 'cm'),
+        legend.title = ggplot2::element_text(size = 20/ggplot2::.pt, face = "bold"),
+        legend.text = ggplot2::element_text(size = 16/ggplot2::.pt))
 ```
 
 #### Play around with different versions of shot charts. Make some by a particular shooter, by a particular game, etc.
@@ -241,7 +317,8 @@ duke_opp_fta %>%
   geom_text(aes(fta_others, label = scales::number(fta_others, accuracy = 0.1)),
             size = 3, color = "white") +
   scale_size_continuous(range = c(7, 12)) +
-  scale_x_continuous(expand = expansion(mult = c(0.15, 0.15))) +
+  scale_x_continuous(labels = scales::dollar,
+                     expand = expansion(mult = c(0.15, 0.15))) +
   scale_color_identity() +
   scale_fill_identity() +
   guides(shape = guide_legend(override.aes = list(size = 0.25))) +

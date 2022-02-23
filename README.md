@@ -10,7 +10,7 @@ Communicating your results to an audience is essential to a data scientist!
 
 This live workshop was held on 2/22/2022.
 
-Link: Coming soon
+Link: https://duke.zoom.us/rec/play/DymLhR3Qpio6c8ia7blzuCUmt5Qwk8CoLy4ia5_sbaJDiy3ilHOnCZpR2_8j2ddACE1By2QJP7gyo8yK.RW1KlazLg0q61c7l?continueMode=true&_x_zm_rtaid=iK4p8h-uR76C5PLwO-jISg.1645585249945.963ff661f1b06fd6a0e14d3c54b7bb52&_x_zm_rhtaid=415
 
 ## Data
 
